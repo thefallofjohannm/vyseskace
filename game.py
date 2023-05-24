@@ -14,41 +14,76 @@ import random
 from assets import *
 
 
+
 class VyseSkace:
     def __init__(self):
         self.window_width = 400
         self.window_height = 700
         pygame.init()
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
-        pygame.display.set_caption("Skakej")
+        pygame.display.set_caption("Bav se")
         # self.screen.blit(get_background(self.window_width, self.window_height))
-        self.screen.fill(BLACK)
+        self.screen.fill(LBLUE)
         pygame.display.flip()
         self.clock = pygame.time.Clock()
         self.clock.tick(60)
         self.snow_tick_count = 0
         self.blocks = list()
         self.number_of_blocks = 15
-        self.player = Player(self.screen, 150, 40)
+        self.player = Player(self.screen, 150, 642) #umístění hráče
 
     def game_loop(self):
         done = False
-        # -------- Main Program Loop -----------
+
+        # -------- Hlavní Program Loop -----------
+
         while not done:
             draw_background(self.screen)
 
-
-            # --- Main event loop
+            # --- Hlavní event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
 
-            # --- Game logic should go here
+                #ovládání pomocí šipek
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.player.movement_vector = [-5,0]
+                    elif event.key == pygame.K_RIGHT:
+                        self.player.movement_vector = [5, 0]
+                    elif event.key == pygame.K_UP:
+                        self.player.movement_vector = [0, -15]
+                    elif event.key == pygame.K_DOWN:
+                        self.player.movement_vector = [0, 15]
+
+                elif event.type == pygame.KEYUP:
+
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                        self.player.movement_vector[0] = 0
+                    elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                        self.player.movement_vector[1] = 0
+
+
+
+
+
+
+            # --- Game logic
 
             self.update_blocks()
-            snow(self.screen)
+
+            #snow(self.screen)
+
             self.player.update_position()
             self.player.draw()
+
+            #self.player.ground_stop() #možná to nebudu ani potřebovat
+
+            self.player.position[0] = self.player.position[0] + self.player.movement_vector[0]
+            self.player.position[1] = self.player.position[1] + self.player.movement_vector[1]
+
+
+
 
             # --- Screen-clearing code goes here
 
@@ -64,6 +99,7 @@ class VyseSkace:
             draw_ground(self.screen)
             pygame.display.flip()
             self.clock.tick(60)
+
 
         # Close the window and quit.
         pygame.quit()
