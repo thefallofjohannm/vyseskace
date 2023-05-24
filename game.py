@@ -29,13 +29,13 @@ class VyseSkace:
         self.snow_tick_count = 0
         self.blocks = list()
         self.number_of_blocks = 15
+        self.player = Player(self.screen, 150, 40)
 
     def game_loop(self):
         done = False
         # -------- Main Program Loop -----------
         while not done:
-            self.screen.fill(BLACK)
-            draw_tree(self.screen, 0, 450)
+            draw_background(self.screen)
 
 
             # --- Main event loop
@@ -46,6 +46,9 @@ class VyseSkace:
             # --- Game logic should go here
 
             self.update_blocks()
+            snow(self.screen)
+            self.player.update_position()
+            self.player.draw()
 
             # --- Screen-clearing code goes here
 
@@ -58,6 +61,7 @@ class VyseSkace:
             # --- Drawing code should go here
 
             # --- Go ahead and update the screen with what we've drawn.
+            draw_ground(self.screen)
             pygame.display.flip()
             self.clock.tick(60)
 
