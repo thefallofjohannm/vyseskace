@@ -10,12 +10,14 @@
 """
 
 import pygame
+import random
 
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BROWN = (200, 200, 100)
 
 pygame.init()
 
@@ -38,15 +40,15 @@ clock = pygame.time.Clock()
 rect_x = 50
 rect_y = 50
 
-rect_x_change = 5
-rect_y_change = 5
+rect_change_x = 5
+rect_change_y = 5
 # -------- Main Program Loop -----------
 while not done:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-vscht
+
     # --- Game logic should go here
 
     # --- Screen-clearing code goes here
@@ -60,8 +62,8 @@ vscht
     draw_tree(screen, 0, 300)
     # --- Drawing code should go here
     pygame.draw.rect(screen, WHITE, [rect_x, 50, 50, 50])
-    rect_x += rect_x_change
-    rect_y += rect_y_change
+    rect_x += rect_change_x
+    rect_y += rect_change_y
 
     # Bounce the rectangle if needed
     if rect_y > 450 or rect_y < 0:
