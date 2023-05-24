@@ -11,76 +11,74 @@
 
 import pygame
 import random
+from assets import *
 
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BROWN = (200, 200, 100)
 
-pygame.init()
+class VyseSkace:
+    def __init__(self):
+        self.window_width = 400
+        self.window_height = 700
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.window_width, self.window_height))
+        pygame.display.set_caption("Skakej")
+        # self.screen.blit(get_background(self.window_width, self.window_height))
+        self.screen.fill(BLACK)
+        pygame.display.flip()
+        self.clock = pygame.time.Clock()
+        self.clock.tick(60)
+        self.snow_tick_count = 0
+        self.blocks = list()
+        self.number_of_blocks = 15
 
-def draw_tree(screen, x, y):
-    pygame.draw.rect(screen, BROWN, [60+x, 170+y, 30, 45])
-    pygame.draw.polygon(screen, GREEN, [[150+x,170+y],[75+x,20+y], [x,170+y]])
-    pygame.draw.polygon(screen, GREEN, [[140+x,120+y], [75+x,y], [10+x,120+y]])
+    def game_loop(self):
+        done = False
+        # -------- Main Program Loop -----------
+        while not done:
+            self.screen.fill(BLACK)
+            draw_tree(self.screen, 0, 450)
 
-# Set the width and height of the screen [width, height]
-size = (700, 500)
-screen = pygame.display.set_mode(size)
 
-pygame.display.set_caption("My Game")
+            # --- Main event loop
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
 
-# Loop until the user clicks the close button.
-done = False
+            # --- Game logic should go here
 
-# Used to manage how fast the screen updates
-clock = pygame.time.Clock()
-rect_x = 50
-rect_y = 50
+            self.update_blocks()
 
-rect_change_x = 5
-rect_change_y = 5
-# -------- Main Program Loop -----------
-while not done:
-    # --- Main event loop
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
+            # --- Screen-clearing code goes here
 
-    # --- Game logic should go here
+            # Here, we clear the screen to white. Don't put other drawing commands
+            # above this, or they will be erased with this command.
 
-    # --- Screen-clearing code goes here
+            # If you want a background image, replace this clear with blit'ing the
+            # background image.
 
-    # Here, we clear the screen to white. Don't put other drawing commands
-    # above this, or they will be erased with this command.
+            # --- Drawing code should go here
 
-    # If you want a background image, replace this clear with blit'ing the
-    # background image.
-    screen.fill(BLACK)
-    draw_tree(screen, 0, 300)
-    # --- Drawing code should go here
-    pygame.draw.rect(screen, WHITE, [rect_x, 50, 50, 50])
-    rect_x += rect_change_x
-    rect_y += rect_change_y
+            # --- Go ahead and update the screen with what we've drawn.
+            pygame.display.flip()
+            self.clock.tick(60)
 
-    # Bounce the rectangle if needed
-    if rect_y > 450 or rect_y < 0:
-        rect_change_y = rect_change_y * -1
-    if rect_x > 650 or rect_x < 0:
-        rect_change_x = rect_change_x * -1
+        # Close the window and quit.
+        pygame.quit()
 
-    for i in range(50):
-        x = random.randrange(0, 400)
-        y = random.randrange(0, 400)
-        pygame.draw.circle(screen, WHITE, [x, y], 2)
+    def update_blocks(self):
+        for i in range(0, self.number_of_blocks - len(self.blocks)):
+            self.blocks.append(Block(self.screen, self.get_height_of_heighest_block() - 50))
 
-    # --- Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
+        new_blocks = list()
+        for b in self.blocks:
+            if b.position_y < self.screen.get_height():
+                b.shift()
+                b.draw()
+                new_blocks.append(b)
+        self.blocks = new_blocks
 
-    # --- Limit to 60 frames per second
-    clock.tick(60)
-
-# Close the window and quit.
-pygame.quit()
+    def get_height_of_heighest_block(self):
+        o = self.screen.get_height() - 100
+        for b in self.blocks:
+            if o > b.position_y:
+                o = b.position_y
+        return o
