@@ -30,7 +30,7 @@ class VyseSkace:
         self.snow_tick_count = 0
         self.blocks = list()
         self.number_of_blocks = 15
-        self.player = Player(self.screen, 150, 642) #umístění hráče
+        self.player = Player(self.screen, 200, 642) #umístění hráče
 
     def game_loop(self):
         done = False
@@ -54,7 +54,7 @@ class VyseSkace:
                     elif event.key == pygame.K_UP:
                         self.player.movement_vector = [0, -15]
                     elif event.key == pygame.K_DOWN:
-                        self.player.movement_vector = [0, 15]
+                        self.player.movement_vector = [0, 5]
 
                 elif event.type == pygame.KEYUP:
 
@@ -62,9 +62,6 @@ class VyseSkace:
                         self.player.movement_vector[0] = 0
                     elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.player.movement_vector[1] = 0
-
-
-
 
 
 
@@ -77,10 +74,27 @@ class VyseSkace:
             self.player.update_position()
             self.player.draw()
 
-            #self.player.ground_stop() #možná to nebudu ani potřebovat
+
 
             self.player.position[0] = self.player.position[0] + self.player.movement_vector[0]
             self.player.position[1] = self.player.position[1] + self.player.movement_vector[1]
+
+            #omezení na souřadnice, pohyb hráče
+            if self.player.position[0] >= 385:
+                self.player.position[0] = 385
+            if self.player.position[0] <= 0:
+                self.player.position[0] = 0
+
+            if self.player.position[1] <= -5:
+                self.player.position[1] = -5
+
+            if self.player.position[1] <= 6000 and self.player.position[1]  >= 1200:
+                self.player.ground_stop()
+                self.player.position[0] = 200
+                self.player.position[1] = 642
+
+
+
 
 
 
