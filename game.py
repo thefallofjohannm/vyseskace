@@ -134,4 +134,3 @@ class VyseSkace:
             if o > b.position_y:
                 o = b.position_y
         return o
-#zmena
