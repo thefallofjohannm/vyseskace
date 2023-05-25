@@ -120,6 +120,6 @@ class Player:
 
     def go_right(self):
         self.movement_vector[0] = 5
-#změna
+
 
 
