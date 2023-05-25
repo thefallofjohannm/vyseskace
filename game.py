@@ -15,22 +15,26 @@ from assets import *
 
 
 
+
+
 class VyseSkace:
     def __init__(self):
-        self.window_width = 400
+
+        self.window_width = 1100
         self.window_height = 700
         pygame.init()
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Bav se")
-        # self.screen.blit(get_background(self.window_width, self.window_height))
+        #self.screen.blit(get_background(self.window_width, self.window_height))
         self.screen.fill(LBLUE)
         pygame.display.flip()
         self.clock = pygame.time.Clock()
         self.clock.tick(60)
         self.snow_tick_count = 0
         self.blocks = list()
-        self.number_of_blocks = 15
-        self.player = Player(self.screen, 200, 642) #umístění hráče
+        self.number_of_blocks = 2
+        self.player = Player(self.screen, 200, 642)  # umístění hráče
+
 
     def game_loop(self):
         done = False
@@ -45,57 +49,60 @@ class VyseSkace:
                 if event.type == pygame.QUIT:
                     done = True
 
-                #ovládání pomocí šipek
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        self.player.movement_vector = [-5,0]
-                    elif event.key == pygame.K_RIGHT:
-                        self.player.movement_vector = [5, 0]
-                    elif event.key == pygame.K_UP:
-                        self.player.movement_vector = [0, -15]
-                    elif event.key == pygame.K_DOWN:
-                        self.player.movement_vector = [0, 5]
+                # ovládání pomocí šipek
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.player.go_left()
+                elif event.key == pygame.K_RIGHT:
+                    self.player.go_right()
+                elif event.key == pygame.K_UP:
+                    self.player.jump()
 
-                elif event.type == pygame.KEYUP:
-
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                        self.player.movement_vector[0] = 0
-                    elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                        self.player.movement_vector[1] = 0
-
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    self.player.gravity()
+                if event.key == pygame.K_RIGHT:
+                    self.player.gravity()
+                if event.key == pygame.K_UP:
+                    self.player.gravity()
 
 
-            # --- Game logic
+
+            # --- GAME LOGIC
 
             self.update_blocks()
 
-            #snow(self.screen)
+
+
+            #snow(self.screen) # zkusím z toho udělat coin
 
             self.player.update_position()
             self.player.draw()
 
-
-
             self.player.position[0] = self.player.position[0] + self.player.movement_vector[0]
             self.player.position[1] = self.player.position[1] + self.player.movement_vector[1]
 
-            #omezení na souřadnice, pohyb hráče
-            if self.player.position[0] >= 385:
-                self.player.position[0] = 385
+            # omezení na souřadnice, pohyb hráče doprava a doleva
+            if self.player.position[0] >= 1085:
+                self.player.position[0] = 1085
             if self.player.position[0] <= 0:
                 self.player.position[0] = 0
 
+            #omezení pohybu nahoru
             if self.player.position[1] <= -5:
                 self.player.position[1] = -5
 
-            if self.player.position[1] <= 6000 and self.player.position[1]  >= 1200:
+            # respam pru pohybu dolů
+            if self.player.position[1] <= 6000 and self.player.position[1] >= 1200:
                 self.player.ground_stop()
                 self.player.position[0] = 200
                 self.player.position[1] = 642
 
 
-
-
+            #ted zkusím udělat sražku tak, že bude pozice hráče a bloku rovnat
+            #if self.player.position[0] == range(self.block.position_x,
+            #                                    self.blocks.position_x + self.blocks.width):
+            #    print (crash)
 
 
 
@@ -114,9 +121,9 @@ class VyseSkace:
             pygame.display.flip()
             self.clock.tick(60)
 
-
         # Close the window and quit.
         pygame.quit()
+
 
     def update_blocks(self):
         for i in range(0, self.number_of_blocks - len(self.blocks)):

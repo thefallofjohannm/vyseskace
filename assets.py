@@ -11,6 +11,8 @@ RED = (255, 0, 0)
 BROWN = (200, 200, 100)
 BLUE = (0, 0, 255)
 LBLUE = (200, 200, 255)
+YELLOW = (253, 218, 13)
+COIN = (25, 21, 13)
 
 
 def draw_tree(screen, x, y):
@@ -18,40 +20,42 @@ def draw_tree(screen, x, y):
     pygame.draw.polygon(screen, GREEN, [[150 + x, 170 + y], [75 + x, 20 + y], [x, 170 + y]])
     pygame.draw.polygon(screen, GREEN, [[140 + x, 120 + y], [75 + x, y], [10 + x, 120 + y]])
 
-    # toto je strom, který se tam vyobrazí do pozadí a nic nedělá. Dá se to předělat a nakreslit něco jiného
 
-def get_background_image(w, h):
-    img = Image.open("background.jpeg")
-    img.resize((w, h))
-    return pygame.image.frombuffer(img.tobytes(), (w, h), "RGB")
+def draw_sun(screen, x, y):
+    pygame.draw.ellipse(screen, YELLOW, [900, 100, 50, 50])
+    pygame.draw.line(screen, YELLOW, [900 - 10, 100 - 10], [1000 + 10, 150 + 10], 2)
+    pygame.draw.line(screen, YELLOW, [900 - 10, 100 - 10], [1000 + 10, 150 + 10], 2)
+    pygame.draw.line(screen, YELLOW, [900 - 10, 100 - 10], [1000 + 10, 150 + 10], 2)
+    pygame.draw.line(screen, YELLOW, [900 - 10, 125 - 10], [1000 + 10, 125 + 10], 2)
 
-    #toto by mělo nahrát obrázek, ale zaítm to nefunguje, tak na to kašlu
 
 def draw_background(screen):
     screen.fill(LBLUE)
-    draw_tree(screen, 0, 450)
-    #toto je moje pozadí, což je tedka cerna plocha se stromem
+    draw_tree(screen, 20, 450)
+    draw_sun(screen, 300, 100)
+    # toto je moje pozadí
+
 
 def draw_ground(screen):
     pygame.draw.rect(screen, WHITE,
-                     [0, screen.get_height() - 43 , screen.get_width(), 43], 30)
+                     [0, screen.get_height() - 43, screen.get_width(), 43], 30)
     # toto je spodní hranice. Je tam spíš z graifckých než užitových důvodů
 
+
 """def snow(screen):
-    for i in range(1):
         x = random.randrange(0, screen.get_width())  # kdyz zmenim okno bude to fungoat
         y = random.randrange(0, screen.get_height())
-        pygame.draw.circle(screen, WHITE, [x, y], 4)
-    #toto je sníh, ale funguje tak, že se mi to někde ranodm ukazuje, to je naprd, takže ot pak předelám"""
+        pygame.draw.circle(screen, COIN, [x, y], 10)
+    #toto je COIN, ale funguje tak, že se mi to někde ranodm ukazuje"""
 
 
-class Block: #toto jsou moje bloky, na které chci skákat
+class Block:  # toto jsou moje bloky, na které chci skákat
     def __init__(self, screen, y):
         self.screen = screen
         self.width = 50
         self.height = 10
         self.color = BLUE
-        self.position_x = random.randint(self.width, screen.get_width() - self.width) #ohraničení, aby nebyly všude
+        self.position_x = random.randint(self.width, screen.get_width() - self.width)  # ohraničení, aby nebyly všude
         self.position_y = y
 
     def draw(self):
@@ -65,6 +69,11 @@ class Block: #toto jsou moje bloky, na které chci skákat
 
     def __str__(self):
         return f"x:{self.position_x}, y:{self.position_y}"
+    #když se pokusíš ten objekt konvertovat na string, tak se promění ve string, obsahující informace o poloze
+
+
+
+
 
 # player player player player player player player player
 class Player:
@@ -78,10 +87,9 @@ class Player:
         self.gravity_acceleration = 1
         self.gravity_update_tick = 0
 
-
     def gravity(self):
         if self.gravity_update_tick >= 5:
-            self.movement_vector[1] += self.gravity_acceleration #postupně se lineárně zrychluje
+            self.movement_vector[1] += self.gravity_acceleration  # postupně se lineárně zrychluje
             self.gravity_update_tick = 0
         else:
             self.gravity_update_tick += 1
@@ -90,21 +98,28 @@ class Player:
         self.gravity()
         self.position += self.movement_vector
         if self.position[1] == 642:
-            self.movement_vector = [0,0]
+            self.movement_vector = [0, 0]
             self.gravity_acceleration = 0
         else:
             self.gravity_acceleration = 1
 
-
-    def draw(self): #aktualizuje mi, kde je zrovna Player tím, že se znovu vykreslí
+    def draw(self):  # aktualizuje mi, kde je zrovna Player tím, že se znovu vykreslí
         pygame.draw.rect(self.screen,
                          self.color,
                          [self.position[0], self.position[1], self.size, self.size], self.size)
 
     def ground_stop(self):
+        self.movement_vector = [0, 0]
+        self.gravity_acceleration = 0
 
-            self.movement_vector = [0,0]
-            self.gravity_acceleration = 0
+    def jump(self):
+        self.movement_vector[1] = -5
+
+    def go_left(self):
+        self.movement_vector[0] = -5
+
+    def go_right(self):
+        self.movement_vector[0] = 5
 
 
 
