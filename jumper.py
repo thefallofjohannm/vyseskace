@@ -15,20 +15,22 @@ class Jumper(pygame.sprite.Sprite):
         self.screen = screen
         self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
-        self.gravity = 1
+        self.gravity = pygame.Vector2(0, 1.5)
+        self.user_input = pygame.Vector2(0, 0)
 
 
     def update(self, platforms):
-        self.apply_gravity()
-        self.apply_movement()
+        self.apply_force()
         self.check_platform_collision(platforms)
+        self.apply_movement()
+
 
 
     #gravitace, která nefunguje jako naše gravitace
     #ale padá konstantní rychlostí
-    def apply_gravity(self):
-        if self.velocity.y < 10:
-            self.velocity.y += self.gravity
+    def apply_force(self):
+        self.velocity += self.gravity + self.user_input - 0.1 * self.velocity
+        
 
 
     def apply_movement(self):
@@ -42,14 +44,16 @@ class Jumper(pygame.sprite.Sprite):
             if self.rect.colliderect(platform.rect):
                 if self.velocity.y > 0:
                     self.rect.bottom = platform.rect.top
-                    self.velocity.y = 0
-                    self.position[1] = platform.rect.y
+                    self.velocity.y = platform.velocity
+                    self.position[1] = platform.rect.y-15
 
 
 
     #funkce pro jednotlivé pohyby
-    def jump(self):
-        if 0 <= self.velocity.y < 10:
+    def jump(self, platforms):
+        test_rect = self.rect
+        test_rect.y + 2
+        if any(test_rect.colliderect(platform) for platform in platforms):
             self.velocity.y = -20
 
 
@@ -62,12 +66,13 @@ class Jumper(pygame.sprite.Sprite):
 
 
     def go_left(self):
-        self.velocity.x = -5
+        self.user_input = pygame.Vector2(-2, 0)
 
 
     def go_right(self):
-        self.velocity.x = 5
-
+        self.user_input = pygame.Vector2(2, 0)
+        
 
     def stop(self):
-        self.velocity.x = 0
+        self.user_input = pygame.Vector2(0, 0)
+        

@@ -1,6 +1,6 @@
 from config import *
 import pygame
-
+import math
 from Block import Block
 from jumper import Jumper
 from platforms import *
@@ -17,12 +17,18 @@ def draw_tree(screen, x, y):
 
 
 #slunko na pozadí
-def draw_sun(screen, x, y):
-    pygame.draw.ellipse(screen, YELLOW, [900, 100, 50, 50])
-    pygame.draw.line(screen, YELLOW, [885, 85], [965, 165], 2)  # diagonalni
-    pygame.draw.line(screen, YELLOW, [925, 75], [925, 175], 2)
-    pygame.draw.line(screen, YELLOW, [965, 85], [885, 165], 2)  # diagonalni
-    pygame.draw.line(screen, YELLOW, [975, 125], [875, 125], 2)
+def draw_sun(screen, *_):
+    X, Y, r, rr, N = 900, 100, 80, 80, 7
+    pygame.draw.ellipse(screen, YELLOW, [X-rr//2, Y-rr//2, rr, rr])
+
+    for angle in [math.pi*i/N for i in range(N)]:
+        start = [900+r*math.cos(angle), 100 + r*math.sin(angle)]
+        end = [900+r*math.cos(angle+math.pi), 100 + r*math.sin(angle+math.pi)]
+        pygame.draw.line(screen, YELLOW, start, end, width=5)
+    # pygame.draw.line(screen, YELLOW, [885, 85], [965, 165], 2)  # diagonalni
+    # pygame.draw.line(screen, YELLOW, [925, 75], [925, 175], 2)
+    # pygame.draw.line(screen, YELLOW, [965, 85], [885, 165], 2)  # diagonalni
+    # pygame.draw.line(screen, YELLOW, [975, 125], [875, 125], 2)
 
 
 def draw_background(screen):
@@ -113,20 +119,19 @@ def game_init():
 
     #platformy, na které se dá skákat
     platforms = pygame.sprite.Group()
+    platforms.add(
+        Platform(100, 400, 50, 10,  2),  # x,y,width, height
+        Platform(200, 100, 30, 10,  3),
+        Platform(300, 600, 50, 10,  1),
+        Platform(400, 550, 20, 10,  4),
+        Platform(500, 52,  30, 10,  1),
+        Platform(600, 420, 50, 10,  3),
+        Platform(700, 69,  50, 10,  2),
+        Platform(800, 51,  20, 10,  8),
+        Platform(900, 320, 20, 10, 1),
+        Platform(1000, 500, 50, 10, 2),
+    )
 
-    platform1  = Platform(100, 400, 50, 10,  2)  # x,y,width, height
-    platform2  = Platform(200, 100, 30, 10,  3)
-    platform3  = Platform(300, 600, 50, 10,  1)
-    platform4  = Platform(400, 550, 20, 10,  4)
-    platform5  = Platform(500, 52,  30, 10,  1)
-    platform6  = Platform(600, 420, 50, 10,  3)
-    platform7  = Platform(700, 69,  50, 10,  2)
-    platform8  = Platform(800, 51,  20, 10,  8)
-    platform9  = Platform(900, 320, 20, 10, 1)
-    platform10 = Platform(1000, 500, 50, 10, 2)
-
-    platforms.add(platform1, platform2, platform3, platform4, platform5, platform6, platform7,
-                  platform8, platform9, platform10)
 
     #toto je předmět, který mohu sbírat
     coin_group = pygame.sprite.Group()
@@ -153,7 +158,7 @@ def game(clock, screen, number_of_blocks, player, blocks, platforms, coin_group,
                 done = True
 
             #ovládání šipkami
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     player.go_left()
 
@@ -161,13 +166,18 @@ def game(clock, screen, number_of_blocks, player, blocks, platforms, coin_group,
                     player.go_right()
 
                 elif event.key == pygame.K_UP:
-                    player.jump()
+                    player.jump(platforms)
+
+                # elif event.key == pygame.K_ESCAPE:
+                #     self.__init__()
 
 
-            if event.type == pygame.KEYUP:
+            elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.stop()
 
+            # elif event.type == USEREVENT+1:
+            #     draw()
         player.update(platforms)
 
         draw_background(screen)
